@@ -8,13 +8,13 @@ crdic = { range(0, 5): 'CR 0-4', range(5, 11): 'CR 5-10', range(11, 17): 'CR 11-
 
 # Finds if number is in the range
 class RangeDict(dict):
-    def __getitem__(self, item):
-        if type(item) != range:
-            for key in self:
-                if item in key:
-                    return self[key]
-        else:
-            return super().__getitem__(item)
+  def __getitem__(self, item):
+    if type(item) != range:
+      for key in self:
+        if item in key:
+          return self[key]
+    else:
+      return super().__getitem__(item)
 
 # Class that finds which sheet to use
 challenge_rating = RangeDict(crdic)
@@ -49,8 +49,7 @@ def crfetcher(crinputs):
     return("whoops")
 
 
-#Rolls the dice for currency
-
+# Defines the dice rolled
 def multiplier(curr, length):
   s = 0
   x = 0
@@ -60,6 +59,7 @@ def multiplier(curr, length):
     s += int(curr[n])*(10**(len(length)-x))
   return(s)
 
+# Rolls the dice and does the math
 def diceroller(cur):
   if cur == 0:
     return(0)
@@ -74,21 +74,19 @@ def diceroller(cur):
       count += random.randint(1,dice)
     return(count*end)
 
-def currency():
-  df = pd.read_excel('Items.xlsx', sheet_name = "Group Gold", index_col = 0, usecols = 'A:F')
-  diction = df.to_dict('index')
-  range = diction[str(crfetcher(e1.get()))]
+# Outputs the currency
+def currency(range):
   cp = range["CP"]
   sp = range["SP"]
   ep = range["EP"]
   gp = range["GP"]
   pp = range["PP"]
 
-  tcp = tk.Label(root, text = str(diceroller(cp)) + " cp").grid(row = 7, columnspan = 2)
-  tsp = tk.Label(root, text = str(diceroller(sp)) + " sp").grid(row = 8, columnspan = 2)
-  tep = tk.Label(root, text = str(diceroller(ep)) + " ep").grid(row = 9, columnspan = 2)
-  tgp = tk.Label(root, text = str(diceroller(gp)) + " gp").grid(row = 10, columnspan = 2)
-  tpp = tk.Label(root, text = str(diceroller(pp)) + " pp").grid(row = 11, columnspan = 2)
+  tcp = tk.Label(root, text = str(diceroller(cp)) + " cp").grid(row = 6, columnspan = 2)
+  tsp = tk.Label(root, text = str(diceroller(sp)) + " sp").grid(row = 7, columnspan = 2)
+  tep = tk.Label(root, text = str(diceroller(ep)) + " ep").grid(row = 8, columnspan = 2)
+  tgp = tk.Label(root, text = str(diceroller(gp)) + " gp").grid(row = 9, columnspan = 2)
+  tpp = tk.Label(root, text = str(diceroller(pp)) + " pp").grid(row = 10, columnspan = 2)
 
 #GUI Starts Here
 
@@ -100,11 +98,13 @@ types.set(0)
 
 tk.Label(root, text = "Welcome to Blood Cobra's Loot Roller for Dungeons and Dragons 5th Eddition").grid(row = 0, columnspan = 6)
 
+# Sets variable for type of loot
 grouporsingle = [
     ("Group", 0),
     ("Single",1)
 ]
 
+# Clears output
 def clear():
   for label in root.grid_slaves():
     if int(label.grid_info()["row"]) >  5:
@@ -112,26 +112,36 @@ def clear():
 
 def roll():
 # Retrieves the sheet that corresponds to the CR and type
-    if crfetcher(e1.get()) != "whoops":
-      df = pd.read_excel('Items.xlsx', sheet_name = str(groupfetcher(types.get())) + str(crfetcher(e1.get())), index_col = 0, usecols = 'E:F')
+  if crfetcher(e1.get()) != "whoops":
+    df = pd.read_excel('Items.xlsx', sheet_name = str(groupfetcher(types.get())) + str(crfetcher(e1.get())), index_col = 0, usecols = 'E:J')
 
 # Keys were strings and I couldn't figure out another way to turn them into ranges
-      diction = df.to_dict()['Item']
-      dictionary = {}
-      for n in diction:
-        dictionary[eval(n)] = diction[n]
-      diction = None
-      clear()
+    diction = df.to_dict('index')
+    dictionary = {}
+    for n in diction:
+      dictionary[eval(n)] = diction[n]
+    diction = None
+    clear()
+
 # Class that finds the item on the table
-      items = RangeDict(dictionary)
-      t = tk.Label(root, text = "")
-      t.grid(row = 6, columnspan = 2)
-      roll = random.randint(1,50)
-      itemresult = (str(roll) + ': ' + str(items[roll]))
-      t.config(text = itemresult)
-# Currency if group
-      if str(groupfetcher(types.get())) == "G":
-        currency()
+    items = RangeDict(dictionary)
+    roll = random.randint(1,100)
+
+# What's done for Group Loot
+    if str(groupfetcher(types.get())) == "G":
+      itemresult = (str(roll) + ': ' + str(items[roll]['Item']))
+      extraresult = str(items[roll]['Gems or Art'])
+      t = tk.Label(root, text = itemresult).grid(row = 11, columnspan = 2)
+      te = tk.Label(root, text = extraresult).grid(row = 12, columnspan = 2)
+      groupc = pd.read_excel('Items.xlsx', sheet_name = "Group Gold", index_col = 0, usecols = 'A:F')
+      cdiction = groupc.to_dict('index')
+      crange = cdiction[str(crfetcher(e1.get()))]
+      currency(crange)
+
+# Individual Loot
+    else:
+      currency(items[roll])
+        
       
     
 
