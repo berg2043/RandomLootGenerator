@@ -7,4 +7,5 @@ Much of the reference files will not be uploaded as they are not my property.
 
 11/26/18 Created proof of concept that rolled on an item table from an xlsx file  
 11/27/18 Added CR and type indentifiers  
-01/21/18 Added a rudimentary GUI that works with CR 1-4
+01/21/18 Added a rudimentary GUI that works with CR 1-4  
+01/25/18 Updated to accommodate all challenge ratings and added a section for gems and art that will be expanded upon in a future update.
