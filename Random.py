@@ -82,11 +82,75 @@ def currency(range):
   gp = range["GP"]
   pp = range["PP"]
 
-  tcp = tk.Label(root, text = str(diceroller(cp)) + " cp").grid(row = 6, columnspan = 2)
-  tsp = tk.Label(root, text = str(diceroller(sp)) + " sp").grid(row = 7, columnspan = 2)
-  tep = tk.Label(root, text = str(diceroller(ep)) + " ep").grid(row = 8, columnspan = 2)
-  tgp = tk.Label(root, text = str(diceroller(gp)) + " gp").grid(row = 9, columnspan = 2)
-  tpp = tk.Label(root, text = str(diceroller(pp)) + " pp").grid(row = 10, columnspan = 2)
+  tcp = tk.Label(root, text = str(diceroller(cp)) + " cp").grid(row = 6, column = 1, columnspan = 2)
+  tsp = tk.Label(root, text = str(diceroller(sp)) + " sp").grid(row = 7, column = 1, columnspan = 2)
+  tep = tk.Label(root, text = str(diceroller(ep)) + " ep").grid(row = 8, column = 1, columnspan = 2)
+  tgp = tk.Label(root, text = str(diceroller(gp)) + " gp").grid(row = 9, column = 1, columnspan = 2)
+  tpp = tk.Label(root, text = str(diceroller(pp)) + " pp").grid(row = 10, column = 1, columnspan = 2)
+
+# Returns Gems and/or Art Objects
+def art(dict,roll, row):
+  if dict[roll]['GA Numb'] != '0':
+    timesa = diceroller(dict[roll]['GA Numb'])
+    z = 0
+    artdict = {}
+    objects = dict[roll]['Gems or Art']
+    try:
+      ranges = pd.read_excel('Items.xlsx', sheet_name = 'Gem Art Ranges', index_col = 0, usecols = 'A:B').to_dict('index')
+      arts = pd.read_excel('Items.xlsx', sheet_name = dict[roll]['Gems or Art'], index_col = 0, usecols = 'A:B').to_dict('index')
+      while z < timesa:
+        rolls = random.randint(1, ranges[dict[roll]['Gems or Art']]['Max'])
+        artdict["var_" + str(z)] = tk.Label(root, text = (dict[roll]['Gems or Art'] + ' ' + arts[rolls]['Item'])).grid(row = row + 1, column = 0, columnspan = 8)
+        z += 1 
+        row += 1
+    except SyntaxError:
+      pass
+
+# Retruns Magic Items
+## Recieved a SyntaxError: unexpected EOF when a magic item wasn't rolled.  Used try to prevent.
+def magicitems(dict, roll, row):
+  print(roll)
+  if dict[roll]['MI Numb'] != '0':
+    if dict[roll]['MI Numb 2'] != '0':
+      times2 = diceroller(dict[roll]['MI Numb 2'])
+      y = 0
+      items2dict = {}
+      try:
+        mdf2 = pd.read_excel('Items.xlsx', sheet_name = dict[roll]['Item 2'], index_col = 0, usecols = 'E:F')
+        mitems2 = dictcreator(mdf2)
+        while y < times2:
+          rolls = random.randint(1,100)
+          items2dict['var_' + str(y)] = tk.Label(root, text = mitems2[rolls]['Item']).grid(row = row + 1, column = 1, columnspan = 2)
+          y += 1
+          row += 1
+      except SyntaxError:
+        pass
+    times = diceroller(dict[roll]['MI Numb'])
+    x = 0
+    itemsdict = {}
+    try:
+      mdf = pd.read_excel('Items.xlsx', sheet_name = dict[roll]['Item'], index_col = 0, usecols = 'E:F')
+      mitems = dictcreator(mdf)
+      while x < times:
+        rolls = random.randint(1,100)
+        itemsdict["var_" + str(x)] = tk.Label(root, text = mitems[rolls]['Item']).grid(row = row + 1, column = 1, columnspan = 2)
+        itemsdict["var_" + str(x)] = tk.Label(root, text = mitems[rolls]['Item']).grid(row = row + 1, column = 1, columnspan = 2)
+        itemsdict["var_" + str(x)] = tk.Label(root, text = mitems[rolls]['Item']).grid(row = row + 1, column = 1, columnspan = 2)
+        x += 1
+        row += 1
+    except SyntaxError:
+      pass
+  art(dict, roll, row)
+
+# Keys were strings and I couldn't figure out another way to turn them into ranges  
+def dictcreator(dfs):
+  diction = dfs.to_dict('index')
+  dictionarys = {}
+  for n in diction:
+    dictionarys[eval(n)] = diction[n]
+  diction = None
+  return(RangeDict(dictionarys))
+
 
 #GUI Starts Here
 
@@ -110,29 +174,23 @@ def clear():
     if int(label.grid_info()["row"]) >  5:
       label.grid_forget()
 
-def roll():
+def roller():
 # Retrieves the sheet that corresponds to the CR and type
   if crfetcher(e1.get()) != "whoops":
-    df = pd.read_excel('Items.xlsx', sheet_name = str(groupfetcher(types.get())) + str(crfetcher(e1.get())), index_col = 0, usecols = 'E:J')
+    df = pd.read_excel('Items.xlsx', sheet_name = str(groupfetcher(types.get())) + str(crfetcher(e1.get())), index_col = 0, usecols = 'E:K')
 
-# Keys were strings and I couldn't figure out another way to turn them into ranges
-    diction = df.to_dict('index')
-    dictionary = {}
-    for n in diction:
-      dictionary[eval(n)] = diction[n]
-    diction = None
+    items = dictcreator(df)
     clear()
-
-# Class that finds the item on the table
-    items = RangeDict(dictionary)
     roll = random.randint(1,100)
 
 # What's done for Group Loot
     if str(groupfetcher(types.get())) == "G":
-      itemresult = (str(roll) + ': ' + str(items[roll]['Item']))
+      #art(items, roll, 11)
+      magicitems(items, roll, 11)
+      itemresult = (str(roll))
       extraresult = str(items[roll]['Gems or Art'])
-      t = tk.Label(root, text = itemresult).grid(row = 11, columnspan = 2)
-      te = tk.Label(root, text = extraresult).grid(row = 12, columnspan = 2)
+      #t = tk.Label(root, text = itemresult).grid(row = 11, columnspan = 2)
+      #te = tk.Label(root, text = extraresult).grid(row = 20, columnspan = 2)
       groupc = pd.read_excel('Items.xlsx', sheet_name = "Group Gold", index_col = 0, usecols = 'A:F')
       cdiction = groupc.to_dict('index')
       crange = cdiction[str(crfetcher(e1.get()))]
@@ -160,7 +218,7 @@ e1 = tk.Entry(root, width = 5)
 
 e1.grid(row = 2, column = 1)
 
-tk.Button(root, text = "roll", command = roll).grid(row = 3)
+tk.Button(root, text = "roll", command = roller).grid(row = 3)
 tk.Button(root, text = "Quit", command = root.quit).grid(row = 3, column = 3)
 
 root.mainloop()
