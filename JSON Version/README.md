@@ -1,0 +1,1 @@
+The faster, JSON based version of the roller.  It includes an excel document that is used as the basis for the JSON file to allow easy editing.  Additionally, a converter file is indcluded to convert the excel document to a JSON file.
