@@ -94,7 +94,6 @@ def art(dict,roll, row):
     timesa = diceroller(dict[roll]['GA Numb'])
     z = 0
     artdict = {}
-    objects = dict[roll]['Gems or Art']
     try:
       ranges = pd.read_excel('Items.xlsx', sheet_name = 'Gem Art Ranges', index_col = 0, usecols = 'A:B').to_dict('index')
       arts = pd.read_excel('Items.xlsx', sheet_name = dict[roll]['Gems or Art'], index_col = 0, usecols = 'A:B').to_dict('index')
@@ -109,7 +108,6 @@ def art(dict,roll, row):
 # Retruns Magic Items
 ## Recieved a SyntaxError: unexpected EOF when a magic item wasn't rolled.  Used try to prevent.
 def magicitems(dict, roll, row):
-  print(roll)
   if dict[roll]['MI Numb'] != '0':
     if dict[roll]['MI Numb 2'] != '0':
       times2 = diceroller(dict[roll]['MI Numb 2'])
@@ -185,12 +183,7 @@ def roller():
 
 # What's done for Group Loot
     if str(groupfetcher(types.get())) == "G":
-      #art(items, roll, 11)
       magicitems(items, roll, 11)
-      itemresult = (str(roll))
-      extraresult = str(items[roll]['Gems or Art'])
-      #t = tk.Label(root, text = itemresult).grid(row = 11, columnspan = 2)
-      #te = tk.Label(root, text = extraresult).grid(row = 20, columnspan = 2)
       groupc = pd.read_excel('Items.xlsx', sheet_name = "Group Gold", index_col = 0, usecols = 'A:F')
       cdiction = groupc.to_dict('index')
       crange = cdiction[str(crfetcher(e1.get()))]
@@ -199,10 +192,6 @@ def roller():
 # Individual Loot
     else:
       currency(items[roll])
-        
-      
-    
-
 
 tk.Label(root, 
          text="""What type of loot?""",
