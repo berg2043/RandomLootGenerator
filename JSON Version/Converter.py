@@ -4,13 +4,13 @@ import json
 import fileinput
 
 # gets lif of sheets
-x = pd.ExcelFile('Items2.xlsx')
+x = pd.ExcelFile('Items_JSON.xlsx')
 
 jsondict = {}
 
 # turns each sheet from Items2 into a json file that you'll need to delete later
 for n in x.sheet_names:
-  jsondict[n] = pd.read_excel('Items2.xlsx', sheet_name = n, index_col = 0).to_json()
+  jsondict[n] = pd.read_excel('Items_JSON.xlsx', sheet_name = n, index_col = 0).to_json()
 
 # Drops dictb into a json that needs to be edited.  See above
 json = json.dumps(jsondict)
