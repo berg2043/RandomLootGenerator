@@ -33,9 +33,6 @@ def groupfetcher(ginputs):
   elif group == 1:
     type = 'I'
     return(type)
-  else:
-    print('You should not have been able to do this')
-    groupfetcher()
 
 # Does currency for individual
 def currency(dict, range):
@@ -91,21 +88,6 @@ def diceroller(cur):
       x += 1
       count += random.randint(1,dice)
     return(count*end)
-
-# Outputs the individual currency
-def currency(dict, range):
-  cp = dictcreator(dict["CP"])[range]
-  sp = dictcreator(dict["SP"])[range]
-  ep = dictcreator(dict["EP"])[range]
-  gp = dictcreator(dict["GP"])[range]
-  pp = dictcreator(dict["PP"])[range]
-
-  tcp = tk.Label(root, text = str(diceroller(cp)) + " CP").grid(row = 6, column = 1, columnspan = 2)
-  tsp = tk.Label(root, text = str(diceroller(sp)) + " SP").grid(row = 7, column = 1, columnspan = 2)
-  tep = tk.Label(root, text = str(diceroller(ep)) + " EP").grid(row = 8, column = 1, columnspan = 2)
-  tgp = tk.Label(root, text = str(diceroller(gp)) + " GP").grid(row = 9, column = 1, columnspan = 2)
-  tpp = tk.Label(root, text = str(diceroller(pp)) + " PP").grid(row = 10, column = 1, columnspan = 2)
-
 
 # Returns Gems and/or Art Objects
 def art(dict,roll, row):
